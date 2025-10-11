@@ -10,10 +10,10 @@ locals {
 
 module "terraform_state_backend" {
   source           = "cloudposse/tfstate-backend/aws"
-  version          = "1.1.1"
+  version          = "1.7.0"
   name             = "jing-infrastructure"
   attributes       = ["state"]
-  dynamodb_enabled = true
+  dynamodb_enabled = false
 
   force_destroy = false
   tags          = local.default_tags
