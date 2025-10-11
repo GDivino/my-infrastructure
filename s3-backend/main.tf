@@ -1,6 +1,6 @@
 locals {
   default_tags = {
-    ManaagedBy = "terraform"
+    ManagedBy = "terraform"
     TFProject = join("//", [
       "github.com/gdivino/my-infrastructure",
       "s3-backend/",
