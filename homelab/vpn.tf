@@ -17,7 +17,9 @@ resource "oci_core_instance" "wireguard" {
     ocpus = 1
   }
 
-  freeform_tags = merge(local.default_tags, { project = "homelab" })
+  freeform_tags = merge(local.default_tags, {
+    project = "homelab"
+  })
 }
 
 resource "oci_core_vcn" "homelab" {
