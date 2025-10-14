@@ -4,4 +4,4 @@
 ${wg_server_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${wg_ssh_private_key_path}
 
 [n8n_server]
-${n8n_server_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${n8n_ssh_private_key_path} ansible_ssh_common_args='-o ProxyCommand="ssh -v -o StrictHostKeyChecking=no ubuntu@${wg_server_ip} -i ${wg_ssh_private_key_path} -W %h:%p"'
+${n8n_server_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${n8n_ssh_private_key_path} ansible_ssh_common_args='-o ProxyCommand="ssh -q ubuntu@${wg_server_ip} -i ${wg_ssh_private_key_path} -W %h:%p"'
