@@ -28,6 +28,6 @@ resource "oci_core_instance" "n8n" {
   }
 
   freeform_tags = merge(local.default_tags, {
-    project = "vpn"
+    project = "n8n"
   })
 }

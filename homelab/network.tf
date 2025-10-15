@@ -60,6 +60,30 @@ resource "oci_core_security_list" "public_security_list" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.wireguard.id
 
+  # Allow https traffic from anywhere
+  ingress_security_rules {
+    description = null
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    stateless   = false
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  # Allow http traffic from anywhere
+  ingress_security_rules {
+    description = null
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    stateless   = false
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
   # Allow wg-easy traffic from anywhere
   ingress_security_rules {
     description = null
@@ -225,6 +249,6 @@ resource "oci_core_subnet" "private_subnet" {
     "Oracle-Tags.CreatedOn" = "2024-10-07T15:10:43.893Z"
   }
   freeform_tags = {
-    project = "homelab"
+    project = "vpn"
   }
 }

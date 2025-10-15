@@ -48,3 +48,12 @@ variable "n8n_private_key_path" {
   type      = string
   sensitive = true
 }
+
+variable "traefik_username" {
+  type = string
+}
+
+variable "traefik_password" {
+  type      = string
+  sensitive = true
+}

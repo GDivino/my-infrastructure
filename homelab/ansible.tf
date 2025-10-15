@@ -8,6 +8,14 @@ resource "local_file" "ansible_inventory" {
   filename = "${path.module}/ansible/inventory.ini"
 }
 
+resource "local_file" "ansible_playbook" {
+  content = templatefile("${path.module}/ansible/site.tpl", {
+    traefik_username = var.traefik_username
+    traefik_password = var.traefik_password
+  })
+  filename = "${path.module}/ansible/site.yml"
+}
+
 resource "null_resource" "ansible_provisioner" {
   depends_on = [
     oci_core_instance.wireguard,
