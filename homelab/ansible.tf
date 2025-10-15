@@ -32,7 +32,7 @@ resource "null_resource" "ansible_provisioner" {
 
   # This provisioner runs the Ansible playbook from your local machine.
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${local_file.ansible_inventory.filename} ansible/site.yml"
+    command = "SHELL=/bin/bash ansible-playbook -i ${local_file.ansible_inventory.filename} ansible/site.yml"
 
     # Setting this environment variable is a common practice for CI/CD
     # to prevent Ansible from hanging on an interactive prompt.
