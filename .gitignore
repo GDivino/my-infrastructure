@@ -37,5 +37,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 inventory.ini
+site.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform

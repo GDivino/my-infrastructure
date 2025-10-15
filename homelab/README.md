@@ -1,1 +1,15 @@
-make sure to add in your private keys using the ssh agent since they are password protected
+- make sure to add in your private keys using the ssh agent since they are password protected
+- always persist the acme.json
+    - this is what traefik uses to store the letsencrypt certificate
+    - since we're using a docker volume, this should not be replaced if it already exists, and should always be persisted if it already exists.
+    - a workaround when we receive the rate limit error when requesting for certificates is to add a new identifier (basically a new host)
+    - in order to add a new identifier in traefik, simply add a new domain this way Host(`real.domain`) || Host(`dummy.domain`)
+    - when adding a new host, letsencrypt requires an A or AAAA record for that specific subdomain
+- SHELL=zsh interfering with the ssh jump command
+    - not exactly sure why yet or how but the jump commands returns an error of no such file or directory when zsh is used
+    - solution: pass in SHELL=/bin/bash when using ssh jump host command
+- I am currently getting a BAD gateway error when accessing vpn.giodivino.dev and when I try to log in to the proxy.giodivino.dev dashboard, it doesn't log me in, it will keep prompting for the username and password
+- when passing in basic auth to traefik docker compose, the password must be hashed in either md5, sha1, or Bcrypt
+    - the recommended way to hash is to use htpasswd cli tool
+- when setting up wg-easy, the HOST env variable is 0.0.0.0 because we are inside of the docker container environment and not in the public internet, where the host is 138.2.75.46
+- in order to provide the proper password for traefik, it's in the format of user:(hashed password) where the hashed password does not need two $$ in docker compose
