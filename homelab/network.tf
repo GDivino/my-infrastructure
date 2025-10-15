@@ -228,38 +228,3 @@ resource "oci_core_subnet" "private_subnet" {
     project = "homelab"
   }
 }
-
-# resource "oci_core_subnet" "private_subnet" {
-#   compartment_id    = var.compartment_id
-#   vcn_id            = oci_core_vcn.wireguard.id
-#   cidr_block        = "142.0.2.0/24"
-#   display_name      = "homelab-wireguard-private-subnet"
-#   security_list_ids = [oci_core_security_list.private_security_list.id]
-#   route_table_id    = oci_core_route_table.private_route_table.id
-# }
-
-# ========== Public ==========
-# import {
-#   to = oci_core_internet_gateway.wireguard
-#   id = "ocid1.internetgateway.oc1.ap-singapore-1.aaaaaaaaxhvut3dajhtqjvdrwo4jyjrc77zhihkubooorunlxspxrh4mr63a"
-# }
-
-# import {
-#   to = oci_core_route_table.public_route_table
-#   id = "ocid1.routetable.oc1.ap-singapore-1.aaaaaaaauvcecqqevs3a6q3lkolgnnjbhd55eil7ejzcnbfdl3l5hjpyucqa"
-# }
-
-# import {
-#   to = oci_core_security_list.public_security_list
-#   id = "ocid1.securitylist.oc1.ap-singapore-1.aaaaaaaaqmnriik2oxfhzqyfnpxyujpllrwxinaj42camb6v37jzyzhsflqq"
-# }
-
-# import {
-#   to = oci_core_subnet.public_subnet
-#   id = "ocid1.subnet.oc1.ap-singapore-1.aaaaaaaaa6lshvr7ozxv26zyv5zyi6k5dsv2xphtmpu4ikan2aghyfvzjiea"
-# }
-
-# import {
-#   to = oci_core_subnet.private_subnet
-#   id = "ocid1.subnet.oc1.ap-singapore-1.aaaaaaaaf4m4deb37yqhtfcog6rgtofkcqgkhwhqdn4vfpkvrq62uq6gdseq"
-# }
