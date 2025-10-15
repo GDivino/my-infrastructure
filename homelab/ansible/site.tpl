@@ -113,19 +113,9 @@
         driver: bridge
         state: present
 
-    - name: Stop traefik container
-      community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/traefik-data
-        state: absent
-
     - name: Start traefik container
       community.docker.docker_compose_v2:
         project_src: /home/ubuntu/traefik-data
-
-    - name: Stop wg-easy container
-      community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/wg-easy-data
-        state: absent
 
     - name: Start wg-easy container
       community.docker.docker_compose_v2:
@@ -201,11 +191,6 @@
       copy:
         src: templates/n8n-docker-compose.yml.j2
         dest: /home/ubuntu/n8n-data/docker-compose.yml
-
-    - name: Stop n8n container
-      community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/n8n-data
-        state: absent
 
     - name: Start n8n container
       community.docker.docker_compose_v2:
