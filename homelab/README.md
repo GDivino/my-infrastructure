@@ -27,3 +27,6 @@
     - a VPN like wireguard allows us to access private IP addresses in an internal network over the public internet
 - security rules are our firewall rules in the cloud world
     - in oracle cloud, you attach these security lists to the subnet
+- split vpn tunnels vs full vpn tunnels
+    - a split vpn tunnel specifies allowed IP's for a set of private IP addresses — this would activate the VPN tunnel only for traffic going to those private IP's
+    - a full vpn tunnel specifies allowed IP's for any and all IP addresses — any ip address you go to in the public internet goes through the VPN tunnel (goes through the VPN server basically)
