@@ -12,4 +12,18 @@
 - when passing in basic auth to traefik docker compose, the password must be hashed in either md5, sha1, or Bcrypt
     - the recommended way to hash is to use htpasswd cli tool
 - when setting up wg-easy, the HOST env variable is 0.0.0.0 because we are inside of the docker container environment and not in the public internet, where the host is 138.2.75.46
+- when setting up the traefik container as well
 - in order to provide the proper password for traefik, it's in the format of user:(hashed password) where the hashed password does not need two $$ in docker compose
+- fixing n8n to be accessible through a container was simple:
+    ```
+    ports:
+    - "0.0.0.0:5678:5678"
+    ```
+- if we want to make a container accessible to the public internet, we simply need to type in 0.0.0.0 as its host name
+- lessons
+    - the DNS name allows us to map text domains to IP addresses
+        - by adding A tags, we're adding subdomains, and all we have to do is connect it to our public IP address — the bastion host
+    - the reverse proxy is so powerful — it enables traffic routing with secure HTTPS communication we can route all our traffic to one IP address, but have the reverse proxy (traefik, nginx, etc.) route it to our own internal network after
+    - a VPN like wireguard allows us to access private IP addresses in an internal network over the public internet
+- security rules are our firewall rules in the cloud world
+    - in oracle cloud, you attach these security lists to the subnet

@@ -187,6 +187,13 @@
         group: ubuntu
         mode: "0755"
 
+    - name: Create n8n data directory
+      file:
+        path: /home/ubuntu/n8n-data/.n8n
+        state: directory
+        owner: 1000
+        group: 1000
+
     - name: Copy n8n docker-compose file
       copy:
         src: templates/n8n-docker-compose.yml.j2

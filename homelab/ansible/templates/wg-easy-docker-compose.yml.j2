@@ -36,10 +36,6 @@ services:
       - "traefik.http.routers.wg-easy-https.service=wg-easy"
       - "traefik.http.services.wg-easy.loadbalancer.server.port=51821"
 
-      # UDP
-      - "traefik.udp.routers.wguard.entrypoints=wireguard"
-      - "traefik.udp.routers.wguard.service=wguard-svc"
-      - "traefik.udp.services.wguard-svc.loadbalancer.server.port=51820"
     volumes:
       - etc_wireguard:/etc/wireguard
       - /lib/modules:/lib/modules:ro
