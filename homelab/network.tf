@@ -195,7 +195,7 @@ resource "oci_core_security_list" "private_security_list" {
   vcn_id         = oci_core_vcn.wireguard.id
   display_name   = "homelab-wireguard-private-security-list"
 
-  # Allow n8n traffic ONLY from within the VCN
+  # Allow n8n traffic ONLY from within the the public subnet
   ingress_security_rules {
     protocol  = "6" # TCP
     source    = "142.0.0.0/16"
