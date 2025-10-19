@@ -32,6 +32,10 @@ resource "oci_core_internet_gateway" "wireguard" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard
+  ]
 }
 
 resource "oci_core_route_table" "public_route_table" {
@@ -53,6 +57,11 @@ resource "oci_core_route_table" "public_route_table" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard,
+    oci_core_internet_gateway.wireguard
+  ]
 }
 
 resource "oci_core_security_list" "public_security_list" {
@@ -139,6 +148,10 @@ resource "oci_core_security_list" "public_security_list" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard
+  ]
 }
 
 resource "oci_core_subnet" "public_subnet" {
@@ -163,6 +176,12 @@ resource "oci_core_subnet" "public_subnet" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard,
+    oci_core_route_table.public_route_table,
+    oci_core_security_list.public_security_list,
+  ]
 }
 
 # ========== Private ==========
@@ -174,6 +193,10 @@ resource "oci_core_nat_gateway" "wireguard" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard
+  ]
 }
 
 resource "oci_core_route_table" "private_route_table" {
@@ -188,6 +211,11 @@ resource "oci_core_route_table" "private_route_table" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard,
+    oci_core_nat_gateway.wireguard
+  ]
 }
 
 resource "oci_core_security_list" "private_security_list" {
@@ -227,6 +255,10 @@ resource "oci_core_security_list" "private_security_list" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard
+  ]
 }
 
 resource "oci_core_subnet" "private_subnet" {
@@ -251,4 +283,10 @@ resource "oci_core_subnet" "private_subnet" {
   freeform_tags = {
     project = "vpn"
   }
+
+  depends_on = [
+    oci_core_vcn.wireguard,
+    oci_core_security_list.private_security_list,
+    oci_core_security_list.private_security_list
+  ]
 }

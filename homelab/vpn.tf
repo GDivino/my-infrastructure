@@ -35,4 +35,9 @@ resource "oci_core_instance" "wireguard" {
   freeform_tags = merge(local.default_tags, {
     project = "vpn"
   })
+
+  depends_on = [
+    oci_core_vcn.wireguard,
+    oci_core_subnet.public_subnet
+  ]
 }
