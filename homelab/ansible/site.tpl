@@ -49,11 +49,6 @@
         repo: "deb [arch={{ docker_arch }}] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
         state: present
 
-    - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
-        state: present
-
     - name: Install Docker and Docker Compose
       apt:
         name:
@@ -162,11 +157,6 @@
     - name: Add Docker repository for the correct architecture
       apt_repository:
         repo: "deb [arch={{ docker_arch }}] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
-        state: present
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
         state: present
 
     - name: Install Docker and Docker Compose
