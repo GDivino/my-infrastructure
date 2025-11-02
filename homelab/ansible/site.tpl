@@ -26,6 +26,17 @@
     - name: Create htpasswd hash for traefik password
       command: htpasswd -nbB "{{ traefik_username }}" "{{ traefik_password }}"
       register: htpasswd_output
+      args:
+        creates: "/home/ubuntu/traefik-data/.htpasswd"
+
+    - name: Create .htpasswd file
+      file:
+        path: "/home/ubuntu/traefik-data/.htpasswd"
+        state: touch
+        owner: ubuntu
+        group: ubuntu
+        access_time: preserve
+        modification_time: preserve
 
     - name: Set htpasswd fact
       set_fact:
@@ -59,41 +70,26 @@
         state: present
         update_cache: yes
 
-    - name: Create wg-easy directory
+    - name: Create wg-easy and traefik directories
       file:
-        path: /home/ubuntu/wg-easy-data
+        path: "/home/ubuntu/{{ item }}"
         state: directory
         owner: ubuntu
         group: ubuntu
         mode: "0755"
+      loop:
+        - wg-easy-data
+        - traefik-data
 
-    - name: Create traefik directory
-      file:
-        path: /home/ubuntu/traefik-data
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: "0755"
-
-    - name: Copy wg-easy docker-compose file
+    - name: Copy configuration files
       copy:
-        src: templates/wg-easy-docker-compose.yml.j2
-        dest: /home/ubuntu/wg-easy-data/docker-compose.yml
-
-    - name: Copy traefik docker-compose file
-      copy:
-        src: templates/traefik-docker-compose.yml.j2
-        dest: /home/ubuntu/traefik-data/docker-compose.yml
-
-    - name: Copy traefik dynamic file
-      template:
-        src: templates/traefik/traefik_dynamic.yml.j2
-        dest: /home/ubuntu/traefik-data/traefik_dynamic.yml
-
-    - name: Copy traefik yaml file
-      copy:
-        src: templates/traefik/traefik.yml
-        dest: /home/ubuntu/traefik-data/traefik.yml
+        src: "templates/{{ item.src }}"
+        dest: "/home/ubuntu/{{ item.dest }}"
+      loop:
+        - { src: 'wg-easy-docker-compose.yml.j2', dest: 'wg-easy-data/docker-compose.yml' }
+        - { src: 'traefik-docker-compose.yml.j2', dest: 'traefik-data/docker-compose.yml' }
+        - { src: 'traefik/traefik_dynamic.yml.j2', dest: 'traefik-data/traefik_dynamic.yml' }
+        - { src: 'traefik/traefik.yml', dest: 'traefik-data/traefik.yml' }
 
     - name: Copy acme json file
       copy:
@@ -121,10 +117,6 @@
   hosts: n8n_server
   become: yes
   tasks:
-    # - name: Wait for the host to become available via proxy
-    #   wait_for_connection:
-    #     delay: 15
-    #     timeout: 180
     - name: Wait for APT lock to be released
       shell: while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 5; done;
       changed_when: false
