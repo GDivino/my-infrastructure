@@ -57,3 +57,7 @@ variable "traefik_password" {
   type      = string
   sensitive = true
 }
+
+variable "n8n_domain" {
+  type = string
+}

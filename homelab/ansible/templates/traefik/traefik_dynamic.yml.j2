@@ -1,4 +1,9 @@
 http:
+  services:
+    n8n:
+      loadBalancer:
+        servers:
+          - url: "http://{{ n8n_server_ip }}:5678"
   middlewares:
     services:
       basicAuth:
@@ -9,6 +14,12 @@ http:
     hsts:
       headers:
         stsSeconds: 2592000
+    vpn-allowlist:
+      ipAllowList:
+        sourceRange:
+          - "10.42.42.0/24"  # VPN Subnet
+          - "127.0.0.1/32"   # Localhost
+          - "140.245.102.145/32" # Server Public IP (for hairpinning/direct access)
   routers:
     api:
       rule: Host(`proxy.giodivino.dev`)
@@ -17,6 +28,22 @@ http:
       middlewares:
         - services
       service: api@internal
+    n8n-secure:
+      rule: "Host(`{{ n8n_domain }}`)"
+      entryPoints:
+        - "websecure"
+      service: "n8n"
+      middlewares:
+        - "vpn-allowlist"
+      tls:
+        certResolver: "letsencrypt"
+    n8n-public:
+      rule: "Host(`{{ n8n_domain }}`) && (PathPrefix(`/webhook/`) || PathPrefix(`/webhook-test/`))"
+      entryPoints:
+        - "websecure"
+      service: "n8n"
+      tls:
+        certResolver: "letsencrypt"
 
 tls:
   options:

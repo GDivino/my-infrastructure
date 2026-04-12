@@ -5,6 +5,8 @@
   vars:
     traefik_username: "${traefik_username}"
     traefik_password: "${traefik_password}"
+    n8n_domain: "${n8n_domain}"
+    n8n_server_ip: "${n8n_server_ip}"
   tasks:
     - name: Wait for APT lock to be released
       shell: while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 5; done;
@@ -23,20 +25,20 @@
         state: present
         update_cache: yes
 
+    - name: Create wg-easy and traefik directories
+      file:
+        path: "/home/ubuntu/{{ item }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+      loop:
+        - wg-easy-data
+        - traefik-data
+
     - name: Create htpasswd hash for traefik password
       command: htpasswd -nbB "{{ traefik_username }}" "{{ traefik_password }}"
       register: htpasswd_output
-      args:
-        creates: "/home/ubuntu/traefik-data/.htpasswd"
-
-    - name: Create .htpasswd file
-      file:
-        path: "/home/ubuntu/traefik-data/.htpasswd"
-        state: touch
-        owner: ubuntu
-        group: ubuntu
-        access_time: preserve
-        modification_time: preserve
 
     - name: Set htpasswd fact
       set_fact:
@@ -70,19 +72,8 @@
         state: present
         update_cache: yes
 
-    - name: Create wg-easy and traefik directories
-      file:
-        path: "/home/ubuntu/{{ item }}"
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: "0755"
-      loop:
-        - wg-easy-data
-        - traefik-data
-
     - name: Copy configuration files
-      copy:
+      template:
         src: "templates/{{ item.src }}"
         dest: "/home/ubuntu/{{ item.dest }}"
       loop:
@@ -116,6 +107,8 @@
 - name: Configure n8n Server
   hosts: n8n_server
   become: yes
+  vars:
+    n8n_domain: "${n8n_domain}"
   tasks:
     - name: Wait for APT lock to be released
       shell: while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 5; done;
@@ -177,7 +170,7 @@
         group: 1000
 
     - name: Copy n8n docker-compose file
-      copy:
+      template:
         src: templates/n8n-docker-compose.yml.j2
         dest: /home/ubuntu/n8n-data/docker-compose.yml
 

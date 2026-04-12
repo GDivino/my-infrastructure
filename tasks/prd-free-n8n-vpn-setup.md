@@ -1,0 +1,76 @@
+# Product Requirements Document: Free Cloud Infrastructure for n8n via VPN
+
+## 1. Introduction/Overview
+This project aims to provision a cost-effective, secure cloud environment to host an n8n automation instance. The infrastructure will be deployed on Oracle Cloud Infrastructure (OCI) using its "Always Free" tier capabilities. To ensure security, the n8n instance will not be exposed directly to the public internet; instead, it will be accessible only through a WireGuard VPN established on the same network.
+
+## 2. Goals
+*   **Secure Access:** Restrict access to the n8n web interface to authenticated VPN users only.
+*   **Cost Efficiency:** Utilize OCI's "Always Free" resources (e.g., ARM Ampere instances) to incur zero monthly costs.
+*   **Automation:** Fully automate the provisioning and configuration process using Terraform and Ansible.
+*   **Persistence:** Ensure n8n workflow data and execution history survive container or server restarts.
+*   **Ease of Use:** Provide a simple UI for VPN client management via `wg-easy`.
+
+## 3. User Stories
+*   **As an automation engineer**, I want to access my n8n dashboard securely from my laptop so that I can create workflows without exposing the system to the public internet.
+*   **As a system administrator**, I want to easily add new devices to my VPN using a web interface (wg-easy).
+*   **As a developer**, I want to provision the entire stack with a single command set so that I can easily replicate or rebuild the environment.
+*   **As a user**, I want my n8n data to be stored on a persistent volume so that I don't lose my work if the server reboots.
+
+## 4. Functional Requirements
+
+### 4.1. Infrastructure (Terraform)
+1.  **VCN & Networking:**
+    *   Create a Virtual Cloud Network (VCN) in OCI.
+    *   Create a Public Subnet for the host.
+    *   Configure Security Lists/Network Security Groups to allow:
+        *   Inbound SSH (Port 22) restricted to the user's IP (optional but recommended).
+        *   Inbound WireGuard UDP traffic (Default port 51820).
+        *   All internal traffic within the VCN/Subnet.
+2.  **Compute:**
+    *   Provision an OCI Compute Instance using an "Always Free" eligible shape (Recommend: `VM.Standard.A1.Flex` with 1-2 OCPUs and 6-12GB RAM, or `VM.Standard.E2.1.Micro` if ARM unavailable).
+    *   Inject SSH keys for remote access.
+
+### 4.2. Configuration & Application Deployment (Ansible)
+3.  **System Prep:**
+    *   Update system packages.
+    *   Install Docker and Docker Compose.
+4.  **VPN Service (wg-easy):**
+    *   Deploy `wg-easy` container.
+    *   Expose UDP port 51820 for VPN connections.
+    *   Expose the Web UI (TCP port 51821) *only* to the internal network/VPN interface, or secure it behind a reverse proxy if public access is strictly required (Default: VPN access only).
+    *   Configure persistent storage for WireGuard configuration (client configs).
+5.  **Automation Service (n8n):**
+    *   Deploy `n8n` container.
+    *   Configure it to listen on an internal Docker network or host port not exposed in the OCI Security List.
+    *   **Persistence:** Mount a local volume (Docker volume or bind mount) for `/home/node/.n8n` to ensure workflows and settings are saved to the host disk.
+
+### 4.3. Integration
+6.  **Connectivity:**
+    *   Ensure the n8n container is reachable by the VPN container (or the host IP) so that clients connected via VPN can access `http://<internal-ip>:5678`.
+
+## 5. Non-Goals (Out of Scope)
+*   **Public Domain Name:** The service will be accessed via IP address initially. No public DNS records are required.
+*   **HTTPS/SSL:** Since access is tunneled through WireGuard, HTTP is acceptable for the MVP.
+*   **High Availability:** The setup will be a single node/instance.
+*   **External Database:** n8n will use its default SQLite database (persisted to disk), not an external Postgres/MySQL instance.
+
+## 6. Design Considerations
+*   **Architecture:** A single OCI instance running both Docker containers is sufficient and maximizes the free tier limits (avoiding split-tier complexity).
+*   **Security:** OCI Security Lists act as the primary firewall. Only UDP 51820 (VPN) and SSH should be open to the world. n8n (5678) and wg-easy UI (51821) should remain blocked from public ingress.
+
+## 7. Technical Considerations
+*   **OS:** Ubuntu 22.04 or 24.04 LTS (Minimal/Standard).
+*   **Tools:**
+    *   Terraform >= 1.0
+    *   Ansible >= 2.10
+*   **Existing Context:** This PRD aligns with the patterns found in the `homelab` directory (Terraform + Ansible + OCI). Implementation should respect the existing directory structure if integrated there, or be a standalone module if requested.
+
+## 8. Success Metrics
+*   `terraform apply` completes successfully creating 1 VCN, 1 Subnet, 1 Instance.
+*   `ansible-playbook` runs successfully deploying Docker containers.
+*   User can establish a WireGuard tunnel from a local machine using a config generated by `wg-easy`.
+*   User can open `http://<vpn-gateway-ip>:5678` in a browser while connected to VPN and see the n8n login screen.
+*   User *cannot* access port 5678 using the instance's public IP address.
+
+## 9. Open Questions
+*   Do we want to integrate this strictly into the existing `homelab` folder structure, or creating a new parallel project? (Assumed: Compatible with `homelab` patterns).

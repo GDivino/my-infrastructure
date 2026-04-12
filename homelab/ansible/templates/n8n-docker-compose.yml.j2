@@ -8,12 +8,12 @@ services:
       - "0.0.0.0:5678:5678"
     environment:
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - N8N_HOST=142.0.2.18
+      - N8N_HOST={{ n8n_domain }}
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_RUNNERS_ENABLED=true
       - NODE_ENV=production
-      - WEBHOOK_URL=http://142.0.2.18:5678/
+      - WEBHOOK_URL=https://{{ n8n_domain }}/
       - GENERIC_TIMEZONE=Asia/Manila
       - TZ=Asia/Manila
       - N8N_SECURE_COOKIE=false

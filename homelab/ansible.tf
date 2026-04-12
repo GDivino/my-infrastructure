@@ -12,6 +12,8 @@ resource "local_file" "ansible_playbook" {
   content = templatefile("${path.module}/ansible/site.tpl", {
     traefik_username = var.traefik_username
     traefik_password = var.traefik_password
+    n8n_domain       = var.n8n_domain
+    n8n_server_ip    = oci_core_instance.n8n.private_ip
   })
   filename = "${path.module}/ansible/site.yml"
 }

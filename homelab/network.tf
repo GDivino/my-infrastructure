@@ -287,6 +287,5 @@ resource "oci_core_subnet" "private_subnet" {
   depends_on = [
     oci_core_vcn.wireguard,
     oci_core_security_list.private_security_list,
-    oci_core_security_list.private_security_list
   ]
 }
